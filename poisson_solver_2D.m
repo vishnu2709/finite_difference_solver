@@ -2,13 +2,15 @@
 % top, left, bottom, right are the boundary condition function
 function potential = poisson_solver_2D(f, top, left, bottom, right, xo, xn, yo, yn, h)
 % Getting no of points from input values specified
-%  try
-   nx = (xn - xo)/h
-   ny = (yn - yo)/h
-%  catch
-%   disp 'The choice of h is such that the no of grid points is not coming out be an integer. 
-%         Please choose another value of h such that the no of points is a valid12 int.'
-%  end
+nx = (xn - xo)/h
+ny = (yn - yo)/h
+
+if (floor(nx) != nx | floor(ny) != ny)
+   disp("The choice of h is such that the no of grid points is not coming out to \
+   be an integer. Please choose another value of h \
+   such that the no of points is a valid int.")
+   return
+end
 
 % Initializing Grid
 grid = zeros(1, 2, ny + 1, nx + 1);
