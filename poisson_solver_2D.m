@@ -66,7 +66,7 @@ for i = 2:nx
     func(j) = power(h, 2)* f(grid(1, 1, j + 1, i), grid(1, 2, j + 1, i));
   end
   top_bottom(1) = potential(1, i);
-  top_bottom(end) = potential(ny+1, i);
+  top_bottom(ny - 1) = potential(ny+1, i);
   func_matrix(:,:,i - 1) = func + top_bottom;
 end
 
@@ -86,22 +86,25 @@ func_matrix(:,:,nx - 1) = func_matrix(:,:,nx - 1) + right_boundary;
 
 for i = 1:nx - 1
   for j = i + 1:nx - 1
-    lambda = coeff_matrix(:,:,j,i)*inv(coeff_matrix(:,:,i,i));
+    lambda = coeff_matrix(:,:,j,i)/coeff_matrix(:,:,i,i);
     for k = i:nx - 1
       coeff_matrix(:,:,j,k) = coeff_matrix(:,:,j,k) - lambda*coeff_matrix(:,:,i,k);
+    end
     func_matrix(:,:,j) = func_matrix(:,:,j) - lambda*func_matrix(:,:,i);
   end
 end
 
+func_matrix
 centre_potential = zeros(ny - 1, 1, nx - 1, 1);
 % Back Substitution
-potential(2:ny, nx) = inv(coeff_matrix(:,:,nx-1, nx-1))*func_matrix(:,:,nx - 1);
+potential(2:ny, nx) = (eye(ny - 1)/coeff_matrix(:,:,nx-1, nx-1))*func_matrix(:,:,nx - 1);
 for j = nx - 2:-1:1
   sum = zeros(ny - 1, 1);
-  for k = j+1:nx - 1
+  for k = j+1:nx-1
     sum = sum + coeff_matrix(:,:,j,k)*potential(2:ny, k + 1);
   end
-  potential(2:ny,j+1) = inv(coeff_matrix(:,:,j,j))*(func_matrix(:,:,j) - sum);
+  sum
+  potential(2:ny,j+1) = (eye(ny - 1)/coeff_matrix(:,:,j,j))*(func_matrix(:,:,j) - sum);
 end
 x_array = grid(1,1,1,1:nx+1);
 y_array = grid(1,2,1:ny+1,1);
