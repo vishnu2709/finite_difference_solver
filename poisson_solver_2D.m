@@ -96,8 +96,6 @@ for i = 1:nx - 1
   end
 end
 
-func_matrix
-centre_potential = zeros(ny - 1, 1, nx - 1, 1);
 % Back Substitution
 potential(2:ny, nx) = (eye(ny - 1)/coeff_matrix(:,:,nx-1, nx-1))*func_matrix(:,:,nx - 1);
 for j = nx - 2:-1:1
@@ -105,10 +103,17 @@ for j = nx - 2:-1:1
   for k = j+1:nx-1
     sum = sum + coeff_matrix(:,:,j,k)*potential(2:ny, k + 1);
   end
-  sum
   potential(2:ny,j+1) = (eye(ny - 1)/coeff_matrix(:,:,j,j))*(func_matrix(:,:,j) - sum);
 end
-x_array = grid(1,1,1,1:nx+1);
-y_array = grid(1,2,1:ny+1,1);
-surf(potential)
+
+% Making a surface plot of the potential obtained
+x_array = grid(1,1,:,:);
+y_array = grid(1,2,:,:);
+x_array = reshape(x_array, [ny + 1, nx + 1]);
+y_array = reshape(y_array, [ny + 1, nx + 1]);
+surf(x_array, y_array, potential)
+xlabel("x (m)")
+ylabel("y (m)")
+zlabel("Potential (V)")
+title("Potential Values in the 2D grid")
 end
