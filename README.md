@@ -1,2 +1,2 @@
-# finite_difference_solver
-Programs to solve various systems using finite difference and Dirichlet Boundary Conditions
+# practice_solvers
+Different numerical methods for practice
