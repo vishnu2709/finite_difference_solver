@@ -6,20 +6,20 @@ from scipy.misc import derivative
 # 1D Scalar Conservation Equation solved using Discontinuous Galerkin method
 # Only linear basis used 
 
-c = 10 # flow speed
+c = 2 # flow speed
 x_start = 0.0
 x_end   = 1.0 
 t_start = 0.0
 t_end = 5.0
-t_elements = 50000 # no of time steps
-elements = 20 # no of space elements
+t_elements = 5000 # no of time steps
+elements = 32 # no of space elements
 
 x_array = np.linspace(x_start, x_end, elements)
 t_array = np.linspace(t_start, t_end, t_elements)
-delta_t = (t_end - t_start)/elements
+delta_t = (t_end - t_start)/t_elements
 
 def initial_value_function(x):
-    return np.sin(3*x)
+    return np.sin(2*np.pi*x)
 
 def J (c, phi):
     return c*phi
@@ -74,17 +74,17 @@ for i in range(1, len(t_array)):
         temp_matrix_1[1] = c*stiffness_matrix[1][0]*basis_weights[j][0] + c*stiffness_matrix[1][1]*basis_weights[j][1]
 
         if (j == 0):
-            temp_matrix_1[0] = temp_matrix_1[0] + J(basis_weights[-1][1])
+            temp_matrix_1[0] = temp_matrix_1[0] + J(c, basis_weights[-1][1])
         else:
-            temp_matrix_1[0] = temp_matrix_1[0] + J(basis_weights[j - 1][1])
+            temp_matrix_1[0] = temp_matrix_1[0] + J(c, basis_weights[j - 1][1])
 
-        temp_matrix_1[1] = temp_matrix_1[1] - J(basis_weights[j][1])
+        temp_matrix_1[1] = temp_matrix_1[1] - J(c, basis_weights[j][1])
         basis_weights[j] = basis_weights[j] + delta_t*np.matmul(np.linalg.inv(mass_matrix), np.array(temp_matrix_1))
 
     if (i >= 100) and (i % 100 == 0):
         plot_elements(x_elements, basis_weights)
         pl.savefig(str(i) + '.png')
-        print "Progress = " + str((i/50000.0)*100.0) + "%"
+        print "Progress = " + str(((i * 1.0)/t_elements)*100.0) + "%"
         pl.clf()
 
     complete_basis_weights.append(basis_weights)
